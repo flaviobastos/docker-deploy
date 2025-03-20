@@ -24,7 +24,7 @@ COPY --from=composer:2.8.5 /usr/bin/composer /usr/local/bin/composer
 COPY . /var/www/html
 
 # Ajustar permissões para garantir que o usuário possa acessar os arquivos
-# RUN chown -R appuser:appgroup /var/www/html
+RUN chown -R appuser:appgroup /var/www/html
 
 # Expor a porta para PHP-FPM
 EXPOSE 9000
