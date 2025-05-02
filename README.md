@@ -25,8 +25,8 @@ GID=1000
 :bulb: <u>Para rodar o container do NODE de forma correta:</u>
 
 ```bash
-1. docker compose run --service-ports --rm node npm run dev
-2. docker compose run --rm -p 5173:5173 node npm run dev
+1. docker compose run --service-ports --rm -it node sh
+2. docker compose run --rm -it -p 5173:5173 node sh
 ```
 
 >*Com --service-ports, o Docker mantém as portas definidas no docker-compose.yml, garantindo que o Vite fique acessível.*
@@ -36,21 +36,29 @@ GID=1000
 :bulb: <u>Configurar no vite.config.js:</u>
 
 ```javascript
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
+import { defineConfig } from "vite"; // Importa função de configuração do Vite
+import laravel from "laravel-vite-plugin"; // Importa o plugin oficial do Laravel para Vite
 
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
+            input: ["resources/css/app.css", "resources/js/app.js"], // Arquivos principais de CSS e JS a serem processados
+            refresh: true, // Ativa atualização automática ao salvar arquivos Blade, CSS ou JS
         }),
     ],
     server: {
-        host: true,  // Permite conexões externas
-        port: 5173,  // Garante que Vite rode na porta correta
+        host: "0.0.0.0", // Permite conexões de qualquer IP (necessário em Docker)
+        port: 5173, // Define a porta usada pelo servidor Vite
+        hmr: {
+            host: "localhost", // Endereço usado pelo navegador para conectar ao WebSocket (HMR)
+            port: 5173, // Porta usada para HMR (Hot Module Replacement)
+        },
+        watch: {
+            usePolling: true, // Força verificação de arquivos em intervalos (evita falhas no Docker/WSL)
+        },
     },
 });
+
 ```
 
 >*Permite acessos externos à aplicação e define a porta onde o Vite será executado*
